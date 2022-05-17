@@ -21,4 +21,3 @@ def get_hashes_by_family_name(db: Session, family_name: str):
 
 def add_families_and_hashes(db: Session,  families_info: List[CreateAndUpdateFamily]):
     pass
-

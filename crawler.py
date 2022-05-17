@@ -16,17 +16,27 @@ def get_child_page_soup(child_page_name):
     return child_page_soup
 
 
-def get_children_info(child_page_soup):
+def get_child_info_from_list(children):
     children_info = []
-    children = child_page_soup.find_all("tr")
-    print(children)
 
     for child in children[2:]:
         columns = child.find_all('td')
-        child_link, child_size,  child_date = columns[0].text, columns[1].text, columns[2].text
-        if child_link == "Samples":
-            print("This one has an extra layer")
+        child_link, child_size, child_date = columns[0].text, columns[1].text, columns[2].text
         children_info.append([child_link, child_size, child_date])
+
+    return children_info
+
+
+def get_children_info(name):
+    child_page_soup = get_child_page_soup(name)
+
+    if "Samples" in child_page_soup.text:
+        next_child_page_soup = get_child_page_soup(name + "/Samples")
+        children = next_child_page_soup.find_all("tr")
+    else:
+        children = child_page_soup.find_all("tr")
+
+    children_info = get_child_info_from_list(children)
 
     return children_info
 
@@ -42,10 +52,9 @@ if __name__ == "__main__":
     for link in links[1:]:
         families[link.text] = []
         if safety_counter < max_requests:
-            child_soup = get_child_page_soup(link.text)
-            families[link.text] = get_children_info(child_soup)
+            families[link.text] = get_children_info(link.text)
             safety_counter += 1
 
-    # for family_name in families.keys():
-    #     print(family_name)
-    #     print(families[family_name])
+    for family_name in families.keys():
+        print(family_name)
+        print(families[family_name])

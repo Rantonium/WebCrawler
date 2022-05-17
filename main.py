@@ -46,7 +46,7 @@ async def get_hashes_by_family(family_name: str, db: Session = Depends(get_db)):
 
 
 @app.post("/families")
-async def add_families_and_hashes(db:Session = Depends(get_db)):
+async def add_families_and_hashes(db: Session = Depends(get_db)):
     pass
 
 # Se da site-ul web https://samples.vx-underground.org/samples/Families/ care reprezinta o colectie de samples malware categorisite dupa familia malware din
