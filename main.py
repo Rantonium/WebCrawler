@@ -1,7 +1,9 @@
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
+import json
 
+import database_util.schemas
 from database_util import models, crud
 from database_util.database_config import engine, SessionLocal
 
@@ -46,8 +48,22 @@ async def get_hashes_by_family(family_name: str, db: Session = Depends(get_db)):
 
 
 @app.post("/families")
-async def add_families_and_hashes(db: Session = Depends(get_db)):
-    pass
+async def add_families_and_hashes(request: Request, db: Session = Depends(get_db)):
+    test_counter = 5
+    counter = 0
+    data = await request.json()
+    data = json.loads(json.dumps(data))
+    for key in data.keys():
+        # key is the name
+        family = crud.add_family(db, key)
+        print(family.id)
+        if counter < test_counter:
+            list_of_hashes = data[key]
+            for curr_hash in list_of_hashes:
+                crud.add_hash_to_family(db, database_util.schemas.CreateAndUpdateHash(family_id=family.id, name=curr_hash[0],
+                                                                                      filesize=curr_hash[1], date=curr_hash[2]))
+            counter += 1
+    return data
 
 # Se da site-ul web https://samples.vx-underground.org/samples/Families/ care reprezinta o colectie de samples malware categorisite dupa familia malware din
 # care acestea fac parte. Pasul 1 Se doreste realizarea unui Scraper Web care sa parcurga structura site-ului si sa parseze informatiile din site. Prin

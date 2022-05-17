@@ -31,8 +31,8 @@ def get_child_info_from_list(children):
 def get_children_info(name):
     child_page_soup = get_child_page_soup(name)
 
-    # some pages have an extra layer, instead of /family_name/, it's /family_name/Samples/, it's sufficient to check for the existence of Samples directory
-    # in the list
+    # some pages have an extra layer, instead of /family_name/, it's /family_name/Samples/,
+    # it's sufficient to check for the existence of Samples directory in the list
     if "Samples" in child_page_soup.text:
         next_child_page_soup = get_child_page_soup(name + "/Samples")
         children = next_child_page_soup.find_all("tr")
@@ -44,8 +44,9 @@ def get_children_info(name):
     return children_info
 
 
+# these exist so the number of requests doesn't get too big, resulting in a ban
 safety_counter = 0
-max_requests = 3
+max_requests_for_children = 5
 
 if __name__ == "__main__":
     families = dict()
@@ -55,10 +56,12 @@ if __name__ == "__main__":
 
     for link in links[1:]:
         families[link.text] = []
-        if safety_counter < max_requests:
+        if safety_counter < max_requests_for_children:
             families[link.text] = get_children_info(link.text)
             safety_counter += 1
 
     json_object = json.dumps(families, indent=4)
 
     print(json_object)
+
+    r = requests.post("http://127.0.0.1:8000/families", data=json_object)
