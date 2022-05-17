@@ -21,16 +21,4 @@ def get_hashes_by_family_name(db: Session, family_name: str):
 
 def add_families_and_hashes(db: Session,  families_info: List[CreateAndUpdateFamily]):
     pass
-    # new_car_info = PaginatedFamilyInfo(**car_info.dict())
-    # db.add(new_car_info)
-    # db.commit()
-    # db.refresh(new_car_info)
-    # return new_car_info
 
-# def create_user(db: Session, user: schemas.UserCreate):
-#     fake_hashed_password = user.password + "notreallyhashed"
-#     db_user = models.UserInfo(username=user.username, password=fake_hashed_password, fullname=user.fullname)
-#     db.add(db_user)
-#     db.commit()
-#     db.refresh(db_user)
-#     return db_user
