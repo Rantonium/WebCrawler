@@ -60,7 +60,7 @@ async def add_families_and_hashes(request: Request, db: Session = Depends(get_db
         if counter < test_counter:
             list_of_hashes = data[key]
             for curr_hash in list_of_hashes:
-                crud.add_hash_to_family(db, database_util.schemas.CreateAndUpdateHash(family_id=family.id, name=curr_hash[0],
+                crud.add_hash_to_family(db, database_util.schemas.CreateAndUpdateHash(family_id=family.id, name=curr_hash[0].split(".")[0],
                                                                                       filesize=curr_hash[1], date=curr_hash[2]))
             counter += 1
     return data
