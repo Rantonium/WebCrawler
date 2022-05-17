@@ -35,13 +35,13 @@ async def get_all_families(limit: int = 100, offset: int = 0, db: Session = Depe
     return response
 
 
-@app.get("/family")
+@app.get("/hashes/{hash_value}/family")
 async def get_family_by_hash(hash_value: str, db: Session = Depends(get_db)):
     response = crud.get_family_by_hash_value(db, hash_value)
     return response
 
 
-@app.get("/family/hashes")
+@app.get("/families/{family_name}/hashes")
 async def get_hashes_by_family(family_name: str, db: Session = Depends(get_db)):
     response = crud.get_hashes_by_family_name(db, family_name)
     return response
@@ -49,14 +49,12 @@ async def get_hashes_by_family(family_name: str, db: Session = Depends(get_db)):
 
 @app.post("/families")
 async def add_families_and_hashes(request: Request, db: Session = Depends(get_db)):
-    test_counter = 5
-    counter = 0
+    test_counter, counter = 5, 0
     data = await request.json()
     data = json.loads(json.dumps(data))
+
     for key in data.keys():
-        # key is the name
         family = crud.add_family(db, key)
-        print(family.id)
         if counter < test_counter:
             list_of_hashes = data[key]
             for curr_hash in list_of_hashes:
