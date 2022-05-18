@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 
 import database_util.schemas
 from database_util import models, crud
+from database_util.database_config import fake_users_db
 from database_util.database_config import engine, SessionLocal
 from token_utils import *
 from user_utils import *
@@ -39,16 +40,6 @@ def get_db():
 
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
-
-fake_users_db = {
-    "johndoe": {
-        "username": "johndoe",
-        "full_name": "John Doe",
-        "email": "johndoe@example.com",
-        "hashed_password": "$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW",
-        "disabled": False,
-    }
-}
 
 
 async def get_current_user(token: str = Depends(oauth2_scheme)):
@@ -100,7 +91,7 @@ async def get_hashes_by_family(family_name: str, db: Session = Depends(get_db), 
 
 
 @app.post("/families")
-async def add_families_and_hashes(request: Request, db: Session = Depends(get_db), current_user:User = Depends(get_current_active_user)):
+async def add_families_and_hashes(request: Request, db: Session = Depends(get_db), current_user: User = Depends(get_current_active_user)):
     test_counter, counter = 5, 0
     try:
         data = await request.json()
@@ -129,15 +120,6 @@ async def add_families_and_hashes(request: Request, db: Session = Depends(get_db
     return data
 
 
-# Se da site-ul web https://samples.vx-underground.org/samples/Families/ care reprezinta o colectie de samples malware categorisite dupa familia malware din
-# care acestea fac parte. Pasul 1 Se doreste realizarea unui Scraper Web care sa parcurga structura site-ului si sa parseze informatiile din site. Prin
-# informatie se face referire la hash-ul unui sample si familia din care face parte. *Scraper-ul Web nu va descarca arhivele hostate de site!!! Pasul 2 Se
-# doreste realizarea unui API - scrapperul va apela o ruta a API-ului printr-o metoda de tip POST prin care va trimite informatiile parsate. API-ul va stoca
-# informatiile oferite prin metoda HTTP intr-un DB. Pasul 3 Se doreste extinderea API-ului de la pasul 2 cu inca 2 rute: O ruta care primeste ca parametru un
-# hash iar raspsnul va fi reprezentat de familia din care sample-ul cu hash-ul respectiv face parte O ruta care primeste ca parametru o familie iar raspunsul
-# va fi reprezentat de o lista de hash-uri ale sample-urilor care fac parte din familia respectiva.
-
-
 @app.post("/token", response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
     user = authenticate_user(fake_users_db, form_data.username, form_data.password)
@@ -152,3 +134,12 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
         data={"sub": user.username}, expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}
+
+
+# Se da site-ul web https://samples.vx-underground.org/samples/Families/ care reprezinta o colectie de samples malware categorisite dupa familia malware din
+# care acestea fac parte. Pasul 1 Se doreste realizarea unui Scraper Web care sa parcurga structura site-ului si sa parseze informatiile din site. Prin
+# informatie se face referire la hash-ul unui sample si familia din care face parte. *Scraper-ul Web nu va descarca arhivele hostate de site!!! Pasul 2 Se
+# doreste realizarea unui API - scrapperul va apela o ruta a API-ului printr-o metoda de tip POST prin care va trimite informatiile parsate. API-ul va stoca
+# informatiile oferite prin metoda HTTP intr-un DB. Pasul 3 Se doreste extinderea API-ului de la pasul 2 cu inca 2 rute: O ruta care primeste ca parametru un
+# hash iar raspsnul va fi reprezentat de familia din care sample-ul cu hash-ul respectiv face parte O ruta care primeste ca parametru o familie iar raspunsul
+# va fi reprezentat de o lista de hash-uri ale sample-urilor care fac parte din familia respectiva.
