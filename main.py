@@ -1,7 +1,9 @@
+import json
+
+from sqlalchemy import exc
 from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-import json
 
 import database_util.schemas
 from database_util import models, crud
@@ -54,12 +56,17 @@ async def add_families_and_hashes(request: Request, db: Session = Depends(get_db
     data = json.loads(json.dumps(data))
 
     for key in data.keys():
-        family = crud.add_family(db, key)
+        try:
+            family = crud.get_family_by_name(db, key)
+        except exc.NoResultFound:
+            family = crud.add_family(db, key)
+
         if counter < test_counter:
             list_of_hashes = data[key]
             for curr_hash in list_of_hashes:
-                crud.add_hash_to_family(db, database_util.schemas.CreateAndUpdateHash(family_id=family.id, name=curr_hash[0].split(".")[0],
-                                                                                      filesize=curr_hash[1], date=curr_hash[2]))
+                if not crud.get_hash_by_name(db, curr_hash[0].split(".")[0]):
+                    crud.add_hash_to_family(db, database_util.schemas.CreateAndUpdateHash(family_id=family.id, name=curr_hash[0].split(".")[0],
+                                                                                          filesize=curr_hash[1], date=curr_hash[2]))
             counter += 1
     return data
 

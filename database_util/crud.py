@@ -1,6 +1,25 @@
+from sqlalchemy import exists
 from sqlalchemy.orm import Session
 
 from database_util import models, schemas
+
+
+def check_family_exists_by_name(db: Session, family_name: str):
+    (ret,), = db.query(exists().where(models.Family.name == family_name))
+    return ret
+
+
+def check_hash_exists_by_name(db: Session, hash_name: str):
+    (ret,), = db.query(exists().where(models.Hash.name == hash_name))
+    return ret
+
+
+def get_family_by_name(db: Session, family_name: str):
+    return db.query(models.Family).filter(models.Family.name == family_name).first()
+
+
+def get_hash_by_name(db: Session, hash_name: str):
+    return db.query(models.Hash).filter(models.Hash.name == hash_name).first()
 
 
 def get_all_families(db: Session, limit: int, offset: int):
