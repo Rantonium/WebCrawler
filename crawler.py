@@ -23,6 +23,7 @@ def get_child_info_from_list(children):
 
     for child in children[2:]:
         columns = child.find_all('td')
+        # could be added some extra checks for len(columns)
         child_link, child_size, child_date = columns[0].text, columns[1].text, columns[2].text
         children_info.append([child_link, child_size, child_date])
 
@@ -64,5 +65,5 @@ if __name__ == "__main__":
     json_object = json.dumps(families, indent=4)
 
     print(json_object)
-
+    # this post will be huge, alta varianta ar fi sa fac post la fiecare 5-10 familii parsate
     r = requests.post(os.environ.get("API_URL"), data=json_object)
