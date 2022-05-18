@@ -5,6 +5,7 @@ import os
 
 DATABASE_URL = os.environ.get('DATABASE_URL')
 
+# this is a quick mock of the database for the users table
 fake_users_db = {
     "johndoe": {
         "username": "johndoe",

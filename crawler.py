@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import json
+import urllib
 import os
 
 master_page_url = "https://samples.vx-underground.org/samples/Families/"
@@ -66,4 +67,11 @@ if __name__ == "__main__":
 
     print(json_object)
     # this post will be huge, alta varianta ar fi sa fac post la fiecare 5-10 familii parsate
-    r = requests.post(os.environ.get("API_URL"), data=json_object)
+
+    # queryString should also be hidden, probably with an environment variable
+    queryString = {'username': 'johndoe', 'password': 'secret'}
+    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+    r = requests.post(os.environ.get("API_URL") + "/token", data=urllib.parse.urlencode(queryString), headers=headers)
+
+    headers_api = {'Authorization': 'bearer %s' % (r.json()['access_token'])}
+    r = requests.post(os.environ.get("API_URL") + "/families", data=json_object, headers=headers_api)
