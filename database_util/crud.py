@@ -28,11 +28,15 @@ def get_all_families(db: Session, limit: int, offset: int):
 
 def get_family_by_hash_value(db: Session, hash_value: str):
     hash_pick = db.query(models.Hash).filter(models.Hash.name == hash_value).first()
+    if hash_pick is None:
+        return False
     return db.query(models.Family).filter(models.Family.id == hash_pick.family_id).first()
 
 
 def get_hashes_by_family_name(db: Session, family_name: str):
     family = db.query(models.Family).filter(models.Family.name == family_name).first()
+    if family is None:
+        return False
     return db.query(models.Hash).filter(models.Hash.family_id == family.id).all()
 
 

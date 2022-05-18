@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import json
+import os
 
 master_page_url = "https://samples.vx-underground.org/samples/Families/"
 
@@ -64,4 +65,4 @@ if __name__ == "__main__":
 
     print(json_object)
 
-    r = requests.post("http://127.0.0.1:8000/families", data=json_object)
+    r = requests.post(os.environ.get("API_URL"), data=json_object)
