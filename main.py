@@ -70,7 +70,7 @@ async def get_current_active_user(current_user: User = Depends(get_current_user)
 
 @app.get("/families")
 async def get_all_families(limit: int = 100, offset: int = 0, db: Session = Depends(get_db), current_user: User = Depends(get_current_active_user)):
-    response = {"limit": 100, "offset": 0, "data": crud.get_all_families(db, limit, offset)}
+    response = {"limit": limit, "offset": offset, "data": crud.get_all_families(db, limit, offset)}
     return response
 
 
