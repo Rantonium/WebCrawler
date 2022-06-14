@@ -20,4 +20,3 @@ class Hash(Base):
     name = Column(String)
     filesize = Column(Integer)
     date = Column(DateTime)
-

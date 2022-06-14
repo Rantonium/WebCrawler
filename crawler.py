@@ -71,6 +71,7 @@ if __name__ == "__main__":
     # queryString should also be hidden, probably with an environment variable
     queryString = {'username': 'johndoe', 'password': 'secret'}
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+    # noinspection PyUnresolvedReferences
     r = requests.post(os.environ.get("API_URL") + "/token", data=urllib.parse.urlencode(queryString), headers=headers)
 
     headers_api = {'Authorization': 'bearer %s' % (r.json()['access_token'])}

@@ -68,30 +68,38 @@ async def get_current_active_user(current_user: User = Depends(get_current_user)
     return current_user
 
 
+# noinspection PyUnusedLocal
 @app.get("/families")
-async def get_all_families(limit: int = 100, offset: int = 0, db: Session = Depends(get_db), current_user: User = Depends(get_current_active_user)):
+async def get_all_families(limit: int = 100, offset: int = 0, db: Session = Depends(get_db),
+                           current_user: User = Depends(get_current_active_user)):
     response = {"limit": limit, "offset": offset, "data": crud.get_all_families(db, limit, offset)}
     return response
 
 
+# noinspection PyUnusedLocal
 @app.get("/hashes/{hash_value}/family")
-async def get_family_by_hash(hash_value: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_active_user)):
+async def get_family_by_hash(hash_value: str, db: Session = Depends(get_db),
+                             current_user: User = Depends(get_current_active_user)):
     response = crud.get_family_by_hash_value(db, hash_value)
     if not response:
         raise HTTPException(status_code=404, detail="Hash not found")
     return response
 
 
+# noinspection PyUnusedLocal
 @app.get("/families/{family_name}/hashes")
-async def get_hashes_by_family(family_name: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_active_user)):
+async def get_hashes_by_family(family_name: str, db: Session = Depends(get_db),
+                               current_user: User = Depends(get_current_active_user)):
     response = crud.get_hashes_by_family_name(db, family_name)
     if not response:
         raise HTTPException(status_code=404, detail="Family not found")
     return response
 
 
+# noinspection PyUnusedLocal
 @app.post("/families")
-async def add_families_and_hashes(request: Request, db: Session = Depends(get_db), current_user: User = Depends(get_current_active_user)):
+async def add_families_and_hashes(request: Request, db: Session = Depends(get_db),
+                                  current_user: User = Depends(get_current_active_user)):
     test_counter, counter = 5, 0
     try:
         data = await request.json()
@@ -110,8 +118,11 @@ async def add_families_and_hashes(request: Request, db: Session = Depends(get_db
             for curr_hash in list_of_hashes:
                 if not crud.get_hash_by_name(db, curr_hash[0].split(".")[0]):
                     try:
-                        crud.add_hash_to_family(db, database_util.schemas.CreateAndUpdateHash(family_id=family.id, name=curr_hash[0].split(".")[0],
-                                                                                              filesize=curr_hash[1], date=curr_hash[2]))
+                        crud.add_hash_to_family(db, database_util.schemas
+                                                .CreateAndUpdateHash(family_id=family.id,
+                                                                     name=curr_hash[0].split(".")[0],
+                                                                     filesize=curr_hash[1],
+                                                                     date=curr_hash[2]))
                     except():
                         print("Current row has incomplete data")
                         continue
@@ -136,10 +147,13 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-# Se da site-ul web https://samples.vx-underground.org/samples/Families/ care reprezinta o colectie de samples malware categorisite dupa familia malware din
-# care acestea fac parte. Pasul 1 Se doreste realizarea unui Scraper Web care sa parcurga structura site-ului si sa parseze informatiile din site. Prin
-# informatie se face referire la hash-ul unui sample si familia din care face parte. *Scraper-ul Web nu va descarca arhivele hostate de site!!! Pasul 2 Se
-# doreste realizarea unui API - scrapperul va apela o ruta a API-ului printr-o metoda de tip POST prin care va trimite informatiile parsate. API-ul va stoca
-# informatiile oferite prin metoda HTTP intr-un DB. Pasul 3 Se doreste extinderea API-ului de la pasul 2 cu inca 2 rute: O ruta care primeste ca parametru un
-# hash iar raspsnul va fi reprezentat de familia din care sample-ul cu hash-ul respectiv face parte O ruta care primeste ca parametru o familie iar raspunsul
-# va fi reprezentat de o lista de hash-uri ale sample-urilor care fac parte din familia respectiva.
+# Se da site-ul web https://samples.vx-underground.org/samples/Families/ care reprezinta o colectie de samples
+# malware categorisite dupa familia malware din care acestea fac parte. Pasul 1 Se doreste realizarea unui Scraper
+# Web care sa parcurga structura site-ului si sa parseze informatiile din site. Prin informatie se face referire la
+# hash-ul unui sample si familia din care face parte. *Scraper-ul Web nu va descarca arhivele hostate de site!!!
+# Pasul 2 Se doreste realizarea unui API - scrapperul va apela o ruta a API-ului printr-o metoda de tip POST prin
+# care va trimite informatiile parsate. API-ul va stoca informatiile oferite prin metoda HTTP intr-un DB. Pasul 3 Se
+# doreste extinderea API-ului de la pasul 2 cu inca 2 rute: O ruta care primeste ca parametru un hash iar raspsnul va
+# fi reprezentat de familia din care sample-ul cu hash-ul respectiv face parte O ruta care primeste ca parametru o
+# familie iar raspunsul va fi reprezentat de o lista de hash-uri ale sample-urilor care fac parte din familia
+# respectiva.
